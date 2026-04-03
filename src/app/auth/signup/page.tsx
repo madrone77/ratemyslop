@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { signUpWithEmail, signInWithOAuth } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

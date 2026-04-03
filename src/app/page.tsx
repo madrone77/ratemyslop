@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { createClient } from "@/lib/supabase/server";
 import { ProjectCard } from "@/components/project-card";
 import { Badge } from "@/components/ui/badge";

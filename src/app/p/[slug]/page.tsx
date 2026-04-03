@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { createClient } from "@/lib/supabase/server";
 import { reportContent } from "@/lib/actions";
 import { VoteButton } from "@/components/vote-button";
