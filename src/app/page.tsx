@@ -2,7 +2,6 @@ export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
 import { ProjectCard } from "@/components/project-card";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -79,28 +78,33 @@ export default async function HomePage({ searchParams }: PageProps) {
   }));
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-3xl">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8">
       {settings?.announcement && (
-        <div className="mb-4 p-3 rounded-lg bg-orange-50 border border-orange-200 text-sm text-orange-800">
+        <div className="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-sm text-orange-800">
           {settings.announcement}
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">The Feed</h1>
-          <p className="text-sm text-muted-foreground">
-            AI-generated projects, rated by humans
-          </p>
-        </div>
+      {/* Hero area */}
+      <div className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+          The Feed
+        </h1>
+        <p className="text-base text-muted-foreground mt-1">
+          AI-generated projects, rated by humans.
+        </p>
+      </div>
 
-        <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+      {/* Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        {/* Sort tabs */}
+        <div className="flex items-center gap-1 rounded-full bg-muted p-1">
           {(["hot", "new", "top"] as const).map((s) => (
             <Link
               key={s}
               href={`/?sort=${s}${category ? `&category=${category}` : ""}`}
               className={cn(
-                "px-3 py-1 text-sm font-medium rounded-md transition-colors capitalize",
+                "px-4 py-1.5 text-sm font-medium rounded-full transition-all capitalize",
                 sort === s
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -110,36 +114,51 @@ export default async function HomePage({ searchParams }: PageProps) {
             </Link>
           ))}
         </div>
-      </div>
 
-      <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1">
-        <Link href={`/?sort=${sort}`}>
-          <Badge
-            variant={!category ? "default" : "secondary"}
-            className="cursor-pointer whitespace-nowrap"
+        {/* Category pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mb-1 w-full sm:w-auto">
+          <Link
+            href={`/?sort=${sort}`}
+            className={cn(
+              "px-3 py-1 rounded-full text-sm font-medium transition-colors whitespace-nowrap border",
+              !category
+                ? "bg-foreground text-background border-foreground"
+                : "text-muted-foreground border-border hover:border-foreground/30"
+            )}
           >
             All
-          </Badge>
-        </Link>
-        {categories?.map((cat) => (
-          <Link key={cat.slug} href={`/?sort=${sort}&category=${cat.slug}`}>
-            <Badge
-              variant={category === cat.slug ? "default" : "secondary"}
-              className="cursor-pointer whitespace-nowrap"
+          </Link>
+          {categories?.map((cat) => (
+            <Link
+              key={cat.slug}
+              href={`/?sort=${sort}&category=${cat.slug}`}
+              className={cn(
+                "px-3 py-1 rounded-full text-sm font-medium transition-colors whitespace-nowrap border",
+                category === cat.slug
+                  ? "bg-foreground text-background border-foreground"
+                  : "text-muted-foreground border-border hover:border-foreground/30"
+              )}
             >
               {cat.name}
-            </Badge>
-          </Link>
-        ))}
+            </Link>
+          ))}
+        </div>
       </div>
 
-      <div className="space-y-2">
+      {/* Project list */}
+      <div className="space-y-3">
         {projectsWithVotes.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            <p className="text-lg font-medium">No slop here yet</p>
-            <p className="text-sm mt-1">
+          <div className="text-center py-20">
+            <p className="text-5xl mb-4">-_-</p>
+            <p className="text-lg font-medium text-muted-foreground">
+              No slop here yet
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">
               Be the first to{" "}
-              <Link href="/submit" className="text-orange-500 hover:underline">
+              <Link
+                href="/submit"
+                className="text-orange-500 hover:underline font-medium"
+              >
                 submit a project
               </Link>
             </p>

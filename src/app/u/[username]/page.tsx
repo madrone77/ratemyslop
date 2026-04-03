@@ -44,7 +44,6 @@ export default async function UserProfilePage({ params }: PageProps) {
     .eq("status", "approved")
     .order("created_at", { ascending: false });
 
-  // Get user votes if logged in
   let userVotes: Record<string, number> = {};
   if (user && projects?.length) {
     const { data: votes } = await supabase
@@ -71,38 +70,42 @@ export default async function UserProfilePage({ params }: PageProps) {
   });
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <div className="flex items-start gap-4">
-        <Avatar className="h-16 w-16">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8">
+      <div className="flex items-start gap-5">
+        <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
           <AvatarImage src={profile.avatar_url || undefined} />
-          <AvatarFallback className="text-xl">
+          <AvatarFallback className="text-2xl">
             {profile.username[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
 
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold">{profile.username}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">{profile.username}</h1>
             {profile.role === "admin" && (
-              <Badge className="bg-orange-100 text-orange-700 border-orange-200">
+              <Badge className="bg-orange-50 text-orange-600 border-orange-200 font-normal">
                 Admin
               </Badge>
             )}
             {profile.is_trusted && (
-              <Badge variant="secondary">Trusted</Badge>
+              <Badge variant="secondary" className="font-normal">
+                Trusted
+              </Badge>
             )}
           </div>
 
           {profile.display_name && (
-            <p className="text-muted-foreground">{profile.display_name}</p>
+            <p className="text-muted-foreground mt-0.5">{profile.display_name}</p>
           )}
 
-          {profile.bio && <p className="text-sm mt-2">{profile.bio}</p>}
+          {profile.bio && (
+            <p className="text-[15px] mt-3 leading-relaxed">{profile.bio}</p>
+          )}
 
-          <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-5 mt-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
-              <TrendingUp className="h-4 w-4" />
-              <span className="font-medium text-foreground">
+              <TrendingUp className="h-4 w-4 text-orange-500" />
+              <span className="font-semibold text-foreground">
                 {profile.karma}
               </span>{" "}
               karma
@@ -115,15 +118,15 @@ export default async function UserProfilePage({ params }: PageProps) {
         </div>
       </div>
 
-      <Separator className="my-6" />
+      <Separator className="my-8" />
 
-      <h2 className="text-lg font-semibold mb-4">
+      <h2 className="text-xl font-semibold mb-5">
         Submissions ({projectsWithVotes.length})
       </h2>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {projectsWithVotes.length === 0 ? (
-          <p className="text-center py-8 text-muted-foreground">
+          <p className="text-center py-12 text-muted-foreground">
             No submissions yet
           </p>
         ) : (

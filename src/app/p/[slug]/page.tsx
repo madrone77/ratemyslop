@@ -58,7 +58,6 @@ export default async function ProjectPage({ params }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Get user's vote
   let userVote = 0;
   if (user) {
     const { data: vote } = await supabase
@@ -70,7 +69,6 @@ export default async function ProjectPage({ params }: PageProps) {
     if (vote) userVote = vote.value;
   }
 
-  // Get comments
   const { data: comments } = await supabase
     .from("comments")
     .select("*, profiles(username, avatar_url)")
@@ -81,14 +79,15 @@ export default async function ProjectPage({ params }: PageProps) {
   const images = project.project_images || [];
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-3xl">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8">
       {project.status === "pending" && (
-        <div className="mb-4 p-3 rounded-lg bg-yellow-50 border border-yellow-200 text-sm text-yellow-800">
+        <div className="mb-6 p-4 rounded-xl bg-yellow-50 border border-yellow-200 text-sm text-yellow-800">
           This submission is pending review and only visible to you.
         </div>
       )}
 
-      <div className="flex items-start gap-4">
+      {/* Title area */}
+      <div className="flex items-start gap-4 sm:gap-5">
         <VoteButton
           projectId={project.id}
           initialScore={project.score}
@@ -96,46 +95,49 @@ export default async function ProjectPage({ params }: PageProps) {
         />
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-start gap-3">
-            <h1 className="text-2xl font-bold">{project.title}</h1>
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 shrink-0 mt-1 h-7 px-2.5 rounded-md border border-border bg-background text-sm font-medium hover:bg-muted transition-colors"
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-              Visit
-            </a>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight">
+            {project.title}
+          </h1>
 
-          <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
-            <Badge variant="secondary">{project.category}</Badge>
+          <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-muted-foreground">
+            <Badge variant="secondary" className="font-normal">
+              {project.category}
+            </Badge>
             <div className="flex items-center gap-1.5">
               <Calendar className="h-3.5 w-3.5" />
               {timeAgo(project.created_at)}
             </div>
             {project.is_featured && (
-              <Badge className="bg-orange-100 text-orange-700 border-orange-200">
+              <Badge className="bg-orange-50 text-orange-600 border-orange-200 font-normal">
                 Featured
               </Badge>
             )}
           </div>
+
+          <a
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full border border-border bg-background text-sm font-medium hover:bg-muted transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" />
+            Visit Project
+          </a>
         </div>
       </div>
 
       {/* Author */}
-      <div className="flex items-center gap-3 mt-4 p-3 rounded-lg bg-muted/50">
-        <Avatar className="h-8 w-8">
+      <div className="flex items-center gap-3 mt-8 p-4 rounded-xl bg-muted/50 border">
+        <Avatar className="h-10 w-10">
           <AvatarImage src={project.profiles?.avatar_url || undefined} />
-          <AvatarFallback>
+          <AvatarFallback className="text-sm">
             {project.profiles?.username?.[0]?.toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div>
           <Link
             href={`/u/${project.profiles?.username}`}
-            className="text-sm font-medium hover:text-orange-500"
+            className="font-medium hover:text-orange-500 transition-colors"
           >
             {project.profiles?.username}
           </Link>
@@ -146,30 +148,30 @@ export default async function ProjectPage({ params }: PageProps) {
       </div>
 
       {/* Description */}
-      <div className="mt-6">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed">
+      <div className="mt-8">
+        <p className="whitespace-pre-wrap text-[15px] leading-relaxed">
           {project.description}
         </p>
       </div>
 
       {/* AI Tools */}
       {project.ai_tools_used?.length > 0 && (
-        <div className="mt-4 flex items-center gap-2">
-          <Wrench className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Built with:</span>
-          <div className="flex gap-1.5 flex-wrap">
-            {project.ai_tools_used.map((tool: string) => (
-              <Badge key={tool} variant="outline" className="text-xs">
-                {tool}
-              </Badge>
-            ))}
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Wrench className="h-4 w-4" />
+            Built with
           </div>
+          {project.ai_tools_used.map((tool: string) => (
+            <Badge key={tool} variant="outline" className="font-normal">
+              {tool}
+            </Badge>
+          ))}
         </div>
       )}
 
       {/* Images */}
       {images.length > 0 && (
-        <div className="mt-6 grid gap-3">
+        <div className="mt-8 grid gap-4">
           {images
             .sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)
             .map((img: { id: string; url: string }) => (
@@ -177,14 +179,14 @@ export default async function ProjectPage({ params }: PageProps) {
                 key={img.id}
                 src={img.url}
                 alt={project.title}
-                className="rounded-lg border w-full"
+                className="rounded-xl border w-full"
               />
             ))}
         </div>
       )}
 
       {/* Report */}
-      <div className="mt-4 flex justify-end">
+      <div className="mt-6 flex justify-end">
         <form
           action={async () => {
             "use server";
@@ -198,7 +200,7 @@ export default async function ProjectPage({ params }: PageProps) {
             variant="ghost"
             size="sm"
             type="submit"
-            className="text-muted-foreground gap-1.5"
+            className="text-muted-foreground/60 gap-1.5 text-xs"
           >
             <Flag className="h-3.5 w-3.5" />
             Report
@@ -206,7 +208,7 @@ export default async function ProjectPage({ params }: PageProps) {
         </form>
       </div>
 
-      <Separator className="my-6" />
+      <Separator className="my-8" />
 
       {/* Comments */}
       <CommentSection

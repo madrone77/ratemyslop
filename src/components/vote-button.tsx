@@ -39,7 +39,6 @@ export function VoteButton({
     const previousVote = currentVote;
     const previousScore = score;
 
-    // Optimistic update
     if (currentVote === value) {
       setCurrentVote(0);
       setScore(score - value);
@@ -62,26 +61,26 @@ export function VoteButton({
   return (
     <div
       className={cn(
-        "flex items-center gap-0.5",
-        isVertical ? "flex-col" : "flex-row"
+        "flex items-center shrink-0",
+        isVertical ? "flex-col gap-0" : "flex-row gap-0.5"
       )}
     >
       <button
         onClick={() => handleVote(1)}
         disabled={isPending}
         className={cn(
-          "p-1 rounded hover:bg-orange-50 transition-colors",
+          "p-1.5 rounded-lg transition-colors",
           currentVote === 1
-            ? "text-orange-500"
-            : "text-muted-foreground hover:text-orange-500"
+            ? "text-orange-500 bg-orange-50"
+            : "text-muted-foreground/60 hover:text-orange-500 hover:bg-orange-50"
         )}
         aria-label="Upvote"
       >
-        <ChevronUp className="h-5 w-5" />
+        <ChevronUp className="h-5 w-5" strokeWidth={2.5} />
       </button>
       <span
         className={cn(
-          "text-sm font-semibold tabular-nums min-w-[2ch] text-center",
+          "text-sm font-bold tabular-nums min-w-[2.5ch] text-center py-0.5",
           currentVote === 1 && "text-orange-500",
           currentVote === -1 && "text-blue-500"
         )}
@@ -92,14 +91,14 @@ export function VoteButton({
         onClick={() => handleVote(-1)}
         disabled={isPending}
         className={cn(
-          "p-1 rounded hover:bg-blue-50 transition-colors",
+          "p-1.5 rounded-lg transition-colors",
           currentVote === -1
-            ? "text-blue-500"
-            : "text-muted-foreground hover:text-blue-500"
+            ? "text-blue-500 bg-blue-50"
+            : "text-muted-foreground/60 hover:text-blue-500 hover:bg-blue-50"
         )}
         aria-label="Downvote"
       >
-        <ChevronDown className="h-5 w-5" />
+        <ChevronDown className="h-5 w-5" strokeWidth={2.5} />
       </button>
     </div>
   );

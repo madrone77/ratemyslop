@@ -23,7 +23,6 @@ export function CommentSection({
 }: CommentSectionProps) {
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
-  // Build threaded comments
   const rootComments = comments.filter((c) => !c.parent_id);
   const childMap = new Map<string, Comment[]>();
   comments.forEach((c) => {
@@ -35,26 +34,29 @@ export function CommentSection({
   });
 
   return (
-    <div className="space-y-4">
-      <h3 className="font-semibold flex items-center gap-2">
-        <MessageSquare className="h-4 w-4" />
+    <div className="space-y-6">
+      <h3 className="text-lg font-semibold flex items-center gap-2">
+        <MessageSquare className="h-5 w-5" />
         {comments.length} Comment{comments.length !== 1 ? "s" : ""}
       </h3>
 
-      {/* Comment form */}
       {isLoggedIn ? (
         <CommentForm projectId={projectId} />
       ) : (
-        <p className="text-sm text-muted-foreground">
-          <Link href="/auth/login" className="text-orange-500 hover:underline">
-            Log in
-          </Link>{" "}
-          to join the discussion
-        </p>
+        <div className="p-4 rounded-xl bg-muted/50 border text-center">
+          <p className="text-sm text-muted-foreground">
+            <Link
+              href="/auth/login"
+              className="text-orange-500 hover:underline font-medium"
+            >
+              Log in
+            </Link>{" "}
+            to join the discussion
+          </p>
+        </div>
       )}
 
-      {/* Comments list */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {rootComments.map((comment) => (
           <CommentThread
             key={comment.id}
@@ -95,7 +97,6 @@ function CommentForm({
       formData.set("body", body);
       formData.set("project_id", projectId);
       if (parentId) formData.set("parent_id", parentId);
-      // Honeypot
       formData.set("phone", "");
 
       const result = await addComment(formData);
@@ -105,34 +106,41 @@ function CommentForm({
         setBody("");
         setError("");
         onSuccess?.();
-        // Reload to show new comment
         window.location.reload();
       }
     });
   };
 
   return (
-    <div className="space-y-2">
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
+    <div className="space-y-3">
+      {error && <p className="text-sm text-destructive">{error}</p>}
       <Textarea
-        placeholder={parentId ? "Write a reply..." : "Share your thoughts on this slop..."}
+        placeholder={
+          parentId
+            ? "Write a reply..."
+            : "Share your thoughts on this slop..."
+        }
         value={body}
         onChange={(e) => setBody(e.target.value)}
         rows={parentId ? 2 : 3}
-        className="resize-none"
+        className="resize-none text-[15px]"
       />
       <div className="flex items-center gap-2">
         <Button
           onClick={handleSubmit}
           disabled={isPending || !body.trim()}
           size="sm"
+          className="rounded-full px-4"
         >
           {isPending ? "Posting..." : parentId ? "Reply" : "Comment"}
         </Button>
         {onCancel && (
-          <Button variant="ghost" size="sm" onClick={onCancel}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onCancel}
+            className="rounded-full"
+          >
             Cancel
           </Button>
         )}
@@ -171,9 +179,9 @@ function CommentThread({
   };
 
   return (
-    <div className={depth > 0 ? "ml-6 border-l-2 pl-4" : ""}>
+    <div className={depth > 0 ? "ml-5 sm:ml-8 border-l-2 border-muted pl-4 sm:pl-5" : ""}>
       <div className="flex items-start gap-3">
-        <Avatar className="h-7 w-7 shrink-0">
+        <Avatar className="h-8 w-8 shrink-0">
           <AvatarImage src={comment.profiles?.avatar_url || undefined} />
           <AvatarFallback className="text-xs">
             {comment.profiles?.username?.[0]?.toUpperCase() || "?"}
@@ -181,25 +189,29 @@ function CommentThread({
         </Avatar>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm">
             <Link
               href={`/u/${comment.profiles?.username}`}
-              className="font-medium text-foreground hover:text-orange-500"
+              className="font-medium hover:text-orange-500 transition-colors"
             >
               {comment.profiles?.username}
             </Link>
-            <span>{timeAgo(comment.created_at)}</span>
+            <span className="text-xs text-muted-foreground">
+              {timeAgo(comment.created_at)}
+            </span>
           </div>
 
-          <p className="text-sm mt-1 whitespace-pre-wrap">{comment.body}</p>
+          <p className="text-[15px] mt-1.5 whitespace-pre-wrap leading-relaxed">
+            {comment.body}
+          </p>
 
-          <div className="flex items-center gap-3 mt-1">
+          <div className="flex items-center gap-4 mt-2">
             {isLoggedIn && depth < 3 && (
               <button
                 onClick={() =>
                   setReplyTo(replyTo === comment.id ? null : comment.id)
                 }
-                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
               >
                 <CornerDownRight className="h-3 w-3" />
                 Reply
@@ -208,7 +220,7 @@ function CommentThread({
             <button
               onClick={handleReport}
               disabled={reportPending}
-              className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1"
+              className="text-xs text-muted-foreground/50 hover:text-destructive flex items-center gap-1 transition-colors"
             >
               <Flag className="h-3 w-3" />
               {reportPending ? "Reported" : "Report"}
@@ -216,7 +228,7 @@ function CommentThread({
           </div>
 
           {replyTo === comment.id && (
-            <div className="mt-2">
+            <div className="mt-3">
               <CommentForm
                 projectId={projectId}
                 parentId={comment.id}
@@ -229,7 +241,7 @@ function CommentThread({
       </div>
 
       {children.length > 0 && (
-        <div className="mt-3 space-y-3">
+        <div className="mt-4 space-y-4">
           {children.map((child) => (
             <CommentThread
               key={child.id}
