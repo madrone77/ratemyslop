@@ -94,12 +94,12 @@ export default async function LoginPage({ searchParams }: PageProps) {
           <form action={signInWithEmail} className="space-y-3">
             <input type="hidden" name="redirect" value={redirect || ""} />
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email or Username</Label>
               <Input
                 id="email"
                 name="email"
-                type="email"
-                placeholder="you@example.com"
+                type="text"
+                placeholder="you@example.com or sloplord42"
                 required
               />
             </div>

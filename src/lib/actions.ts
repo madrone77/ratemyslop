@@ -60,12 +60,45 @@ export async function signUpWithEmail(formData: FormData) {
 
 export async function signInWithEmail(formData: FormData) {
   const supabase = await createClient();
-  const email = formData.get("email") as string;
+  let emailOrUsername = formData.get("email") as string;
   const password = formData.get("password") as string;
   const redirectTo = formData.get("redirect") as string;
 
+  // If input doesn't look like an email, treat it as a username
+  if (!emailOrUsername.includes("@")) {
+    const { createClient: createSupabaseClient } = await import(
+      "@supabase/supabase-js"
+    );
+    const serviceClient = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    // Look up the user's email by username
+    const { data: profile } = await serviceClient
+      .from("profiles")
+      .select("id")
+      .eq("username", emailOrUsername)
+      .single();
+
+    if (!profile) {
+      redirect(`/auth/login?error=${encodeURIComponent("User not found")}`);
+    }
+
+    // Get email from auth.users via admin API
+    const { data: authUser } = await serviceClient.auth.admin.getUserById(
+      profile.id
+    );
+
+    if (!authUser?.user?.email) {
+      redirect(`/auth/login?error=${encodeURIComponent("User not found")}`);
+    }
+
+    emailOrUsername = authUser.user.email;
+  }
+
   const { error } = await supabase.auth.signInWithPassword({
-    email,
+    email: emailOrUsername,
     password,
   });
 

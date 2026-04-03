@@ -21,6 +21,7 @@ import type { Profile } from "@/types/database";
 export function Header() {
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();
 
@@ -38,6 +39,7 @@ export function Header() {
           .single();
         if (data) setProfile(data);
       }
+      setLoading(false);
     };
     getUser();
 
@@ -88,7 +90,9 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-3">
-          {user ? (
+          {loading ? (
+            <div className="h-8 w-20" />
+          ) : user ? (
             <>
               <Link
                 href="/submit"

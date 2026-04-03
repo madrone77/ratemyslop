@@ -5,9 +5,8 @@ import { reportContent } from "@/lib/actions";
 import { VoteButton } from "@/components/vote-button";
 import { CommentSection } from "@/components/comment-section";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ExternalLink,
@@ -103,10 +102,7 @@ export default async function ProjectPage({ params }: PageProps) {
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "gap-1.5 shrink-0 mt-1"
-              )}
+              className="inline-flex items-center gap-1.5 shrink-0 mt-1 h-7 px-2.5 rounded-md border border-border bg-background text-sm font-medium hover:bg-muted transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Visit
