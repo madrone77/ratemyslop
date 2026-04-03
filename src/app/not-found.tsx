@@ -1,8 +1,6 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
@@ -14,7 +12,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className={cn(buttonVariants({ size: "lg" }), "mt-6")}
+        className="inline-flex items-center justify-center mt-6 h-9 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/80 transition-colors"
       >
         Back to the feed
       </Link>
