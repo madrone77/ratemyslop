@@ -154,7 +154,7 @@ export async function submitProject(formData: FormData) {
   // Check if user is banned
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_banned, created_at")
+    .select("is_banned, is_trusted, role, created_at")
     .eq("id", user.id)
     .single();
 
@@ -174,11 +174,12 @@ export async function submitProject(formData: FormData) {
     redirect("/submit?error=You've reached the daily submission limit (15). Try again tomorrow!");
   }
 
-  // Check if new account needs approval
+  // Check if new account needs approval (admins and trusted users bypass)
+  const isTrusted = profile?.is_trusted || profile?.role === "admin" || profile?.role === "moderator";
   const accountAge =
     Date.now() - new Date(profile?.created_at || "").getTime();
   const isNewAccount = accountAge < 24 * 60 * 60 * 1000;
-  const status = isNewAccount && !profile?.is_banned ? "pending" : "approved";
+  const status = isNewAccount && !isTrusted ? "pending" : "approved";
 
   // Check submissions are open
   const { data: settings } = await supabase
